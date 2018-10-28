@@ -48,7 +48,7 @@ static int		sha512_init_w_arr(t_word *word, unsigned long **w_arr,
 }
 
 static void		sha512_main_loop(unsigned long **temp,
-	unsigned long *k_arr, unsigned long *w_arr)
+	const unsigned long *k_arr, unsigned long *w_arr)
 {
 	int				i;
 	unsigned long	temp1;
@@ -78,7 +78,7 @@ static void		sha512_main_loop(unsigned long **temp,
 }
 
 unsigned long	*sha512_start_processing(t_word *word,
-	unsigned long *k_arr, unsigned long *hash_values)
+	const unsigned long *k_arr, unsigned long *hash_values)
 {
 	unsigned long	*temp_values;
 	unsigned long	*w_arr;

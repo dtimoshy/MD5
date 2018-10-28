@@ -20,7 +20,7 @@ static void		parce_s_flag(t_flags *flags, char **av, int *i, int *j)
 			ft_printf("%s (\"%s\") = ", ft_str_to_upper(flags->name),
 				&av[*i][*j + 1]);
 		word = make_word((unsigned char *)&av[*i][*j + 1], ft_strlen(&av[*i][*j + 1]));
-		flags->f(word, flags);
+		flags->f(word);
 		if (!flags->flag_q && flags->flag_r)
 			ft_printf(" \"%s\"", &av[*i][*j + 1]);
 		*j = *j + (int)ft_strlen(&av[*i][*j + 1]);
@@ -30,7 +30,7 @@ static void		parce_s_flag(t_flags *flags, char **av, int *i, int *j)
 		word = make_word((unsigned char *)av[++(*i)], ft_strlen(av[*i]));
 		if (!flags->flag_q && !flags->flag_r)
 			ft_printf("%s (\"%s\") = ", ft_str_to_upper(flags->name), av[*i]);
-		flags->f(word, flags);
+		flags->f(word);
 		if (!flags->flag_q && flags->flag_r)
 			ft_printf(" \"%s\"", av[*i]);
 		(*j) = (int)ft_strlen(av[*i]) - 1;
@@ -50,7 +50,7 @@ void			from_fd(t_flags *flags, int fd, char *name)
 	if (fd == 0 && flags->flag_p > 1)
 	{
 		word = make_word((unsigned char *)"", 0);
-		flags->f(word, flags);
+		flags->f(word);
 		ft_printf("\n");
 		free(word);
 		return ;
@@ -59,7 +59,7 @@ void			from_fd(t_flags *flags, int fd, char *name)
 	length = read_from_fd(fd, &line);
 	(fd == 0 && flags->flag_p) ? (ft_printf("%s", line)) : 0;
 	word = make_word(line, length);
-	flags->f(word, flags);
+	flags->f(word);
 	(fd != 0 && flags->flag_r && !flags->flag_q) ? ft_printf(" %s", name) : 0;
 	ft_printf("\n");
 	free(word);
@@ -73,20 +73,19 @@ int				parce_flags(t_flags *flags, char **av, int ac, int *i)
 	j = 0;
 	while (++j && av[*i][j])
 	{
-		if (av[*i][j] != 's' && av[*i][j] != 'q' &&
-			av[*i][j] != 'r' && av[*i][j] != 'p' && av[*i][j] != 'b')
+		if (!(ft_strchr("pqrs", av[*i][j])))
 		{
-			ft_printf("%s: illegal option -- %c\nAvailable flags:\n-p: echo STD\
-IN to STDOUT and append cheksum to STDOUT\n-q: quiet mode\n-r: reverse format\n\
--s: print the sum of a string\n-b: print in binary\n", flags->name, av[*i][j]);
+			ft_printf("%s: illegal option -- %c\n", flags->name, av[*i][j]);
+			ft_printf("usage: %s [-pqr] [-s string] [files ...]\n", flags->name);
 			if (!flags->read_from_fd)
 				return (-1);
 			else
 				return (-2);
 		}
-		(av[*i][j] == 'q') ? flags->flag_q = 1 : 0;
-		(av[*i][j] == 'r') ? flags->flag_r = 1 : 0;
-		(av[*i][j] == 'b') ? flags->flag_b = 1 : 0;
+		if (av[*i][j] == 'q')
+			flags->flag_q = 1;
+		if (av[*i][j] == 'r')
+			flags->flag_r = 1;
 		(av[*i][j] == 'p' && ++flags->flag_p) ? from_fd(flags, 0, NULL) : 0;
 		if (av[*i][j] == 's' && (flags->write_from_stdin = 1))
 			(*i == ac - 1 && !av[*i][j + 1]) ? (ft_printf("%s: option requires \

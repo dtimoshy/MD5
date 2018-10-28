@@ -1,7 +1,7 @@
 #include "ft_ssl_md5.h"
 
 static unsigned int	assign_f(unsigned int *temp_vars, int i,
-	unsigned int *k_arr, unsigned int *m_arr)
+	const unsigned int *k_arr, unsigned int *m_arr)
 {
 	unsigned int	f;
 	int				g;
@@ -20,7 +20,7 @@ static unsigned int	assign_f(unsigned int *temp_vars, int i,
 	return (f);
 }
 
-static void			md5_main_loop(int *s_arr, unsigned int *k_arr,
+static void			md5_main_loop(const int *s_arr, const unsigned int *k_arr,
 			unsigned int **temp_vars, unsigned int *m_arr)
 {
 	int				i;
@@ -70,7 +70,7 @@ static int			md5_init_m_arr(t_word *word, unsigned int **m_arr,
 }
 
 unsigned int		*md5_start_processing(t_word *word,
-				unsigned int *hash_values, int *s_arr, unsigned int *k_arr)
+				unsigned int *hash_values, const int *s_arr, const unsigned int *k_arr)
 {
 	unsigned int	*temp_vars;
 	int				i;
