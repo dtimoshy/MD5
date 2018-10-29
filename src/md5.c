@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   md5.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dtimoshy <dtimoshy@student.unit.ua>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/10/29 16:44:19 by dtimoshy          #+#    #+#             */
+/*   Updated: 2018/10/29 16:44:21 by dtimoshy         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ssl_md5.h"
 
-static const int	s_arr_md5[] =
+static const int			g_s_arr_md5[] =
 {
 	7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
 	5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
@@ -8,7 +20,7 @@ static const int	s_arr_md5[] =
 	6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
 };
 
-static const unsigned int	k_arr_md5[] =
+static const unsigned int	g_k_arr_md5[] =
 {
 	0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf,
 	0x4787c62a, 0xa8304613, 0xfd469501, 0x698098d8, 0x8b44f7af,
@@ -25,41 +37,31 @@ static const unsigned int	k_arr_md5[] =
 	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 };
 
-unsigned long	ft_pow(size_t x, int pow)
+void			md5_init(unsigned int *state)
 {
-	unsigned long res;
-
-	res = 1;
-	while (pow > 0)
-	{
-		res = res * x;
-		pow--;
-	}
-	return (res);
+	state[0] = 0x67452301;
+	state[1] = 0xefcdab89;
+	state[2] = 0x98badcfe;
+	state[3] = 0x10325476;
 }
 
-void				md5(t_content *word)
+void			md5(t_content *string)
 {
-	int i;
-	int j;
-	unsigned int	hash_state[4];
+	int				i;
+	int				j;
+	unsigned int	state[4];
 
-//	hash_state = (unsigned int *)malloc(sizeof(unsigned int) * 4);
-	hash_state[0] = 0x67452301;
-	hash_state[1] = 0xefcdab89;
-	hash_state[2] = 0x98badcfe;
-	hash_state[3] = 0x10325476;
-	hash_state = md5_process(word, hash_state, s_arr_md5, k_arr_md5);
+	md5_init(state);
+	md5_process(string, state, g_s_arr_md5, g_k_arr_md5);
 	i = -1;
 	while (++i < 4)
 	{
 		j = 1;
-		while ( j < 5)
+		while (j < 5)
 		{
-			ft_printf("%.2x", hash_state[i] % 256);
-			hash_state[i] /= 256;
+			ft_printf("%.2x", state[i] % 256);
+			state[i] /= 256;
 			j++;
 		}
 	}
-//	free(hash_state);
 }

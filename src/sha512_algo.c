@@ -1,109 +1,106 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sha512_algo.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dtimoshy <dtimoshy@student.unit.ua>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/10/29 16:45:52 by dtimoshy          #+#    #+#             */
+/*   Updated: 2018/10/29 16:45:53 by dtimoshy         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ssl_md5.h"
 
-static void		sha512_append_w_arr(unsigned long **w_arr)
+#define ROTRIGHT64(a,b) (((a) >> (b)) | ((a) << (64-(b))))
+#define EP0512(x) (ROTRIGHT64(x,28) ^ ROTRIGHT64(x,34) ^ ROTRIGHT64(x,39))
+#define EP1512(x) (ROTRIGHT64(x,14) ^ ROTRIGHT64(x,18) ^ ROTRIGHT64(x,41))
+#define SIG0512(x) (ROTRIGHT64(x,1) ^ ROTRIGHT64(x,8) ^ ((x) >> 7))
+#define SIG1512(x) (ROTRIGHT64(x,19) ^ ROTRIGHT64(x,61) ^ ((x) >> 6))
+
+static void		sha512_end_t_arr(unsigned long **t_arr)
 {
 	int				i;
-	unsigned long	s0;
-	unsigned long	s1;
 
 	i = 16;
 	while (i < 80)
 	{
-		s0 = rot_r(w_arr[0][i - 15], 1, 64) ^
-			rot_r(w_arr[0][i - 15], 8, 64) ^ w_arr[0][i - 15] >> 7;
-		s1 = rot_r(w_arr[0][i - 2], 19, 64) ^
-			rot_r(w_arr[0][i - 2], 61, 64) ^ w_arr[0][i - 2] >> 6;
-		w_arr[0][i] = w_arr[0][i - 16] + s0 + w_arr[0][i - 7] + s1;
+		t_arr[0][i] = t_arr[0][i - 16] + SIG0512(t_arr[0][i - 15]) +
+				t_arr[0][i - 7] + SIG1512(t_arr[0][i - 2]);
 		i++;
 	}
 }
 
-static int		sha512_init_w_arr(t_content *word, unsigned long **w_arr,
-		int append_one, size_t *processed_amount)
+static int		sha512_t_arr(t_content *string, unsigned long **t_arr,
+				int appendix, size_t *size_done)
 {
-	unsigned long	curr_length;
+	unsigned long	len_now;
 	int				i;
-	int				j;
-	size_t			last_byte;
+	int				k;
+	size_t			rest;
 
-	curr_length = word->content_len / 8 - (*processed_amount);
+	len_now = string->cont_len / 8 - (*size_done);
 	i = 0;
-	last_byte = 0;
-	while (i < 16 && ++i && !(j = 0))
-		while (j < 8 && ++j)
+	rest = 0;
+	while (i < 16 && ++i && !(k = 0))
+		while (k < 8 && ++k)
 		{
-			w_arr[0][i - 1] = (w_arr[0][i - 1] << 8) + word->content[0];
-			(last_byte < curr_length && ++last_byte) ? (word->content++) : 0;
+			t_arr[0][i - 1] = (t_arr[0][i - 1] << 8) + string->content[0];
+			(rest < len_now && ++rest) ? (string->content++) : 0;
 		}
-	(*processed_amount) += last_byte;
-	if (curr_length < 128 && append_one != 1)
-		w_arr[0][last_byte / 8] += ft_pow(2, (8 - last_byte % 8) * 8 - 1);
-	if (curr_length < 112)
+	(*size_done) += rest;
+	if (len_now < 128 && appendix != 1)
+		t_arr[0][rest / 8] += ft_pow(2, (8 - rest % 8) * 8 - 1);
+	if (len_now < 112)
 	{
-		w_arr[0][14] = word->content_len / ft_pow(2, 63);
-		w_arr[0][15] = word->content_len % ft_pow(2, 63);
+		t_arr[0][14] = string->cont_len / ft_pow(2, 63);
+		t_arr[0][15] = string->cont_len % ft_pow(2, 63);
 	}
-	sha512_append_w_arr(w_arr);
-	return ((curr_length < 128) + (curr_length < 112));
+	sha512_end_t_arr(t_arr);
+	return ((len_now < 128) + (len_now < 112));
 }
 
-static void		sha512_main_loop(unsigned long **temp,
-	const unsigned long *k_arr, unsigned long *w_arr)
+static void		sha512_loop(unsigned long *temp,
+				const unsigned long *k_arr, unsigned long *t_arr)
 {
 	int				i;
-	unsigned long	temp1;
-	unsigned long	temp2;
+	unsigned long	tmp1;
+	unsigned long	tmp2;
 
 	i = 0;
 	while (i < 80)
 	{
-		temp1 = temp[0][7] + (rot_r(temp[0][4], 14, 64) ^
-			rot_r(temp[0][4], 18, 64) ^ rot_r(temp[0][4], 41, 64));
-		temp1 += ((temp[0][4] & temp[0][5]) ^ (~temp[0][4] & temp[0][6]));
-		temp1 += k_arr[i] + w_arr[i];
-		temp2 = rot_r(temp[0][0], 28, 64) ^ rot_r(temp[0][0], 34, 64) ^
-		rot_r(temp[0][0], 39, 64);
-		temp2 += (temp[0][0] & temp[0][1]) ^ (temp[0][0] & temp[0][2]) ^
-		(temp[0][1] & temp[0][2]);
-		temp[0][7] = temp[0][6];
-		temp[0][6] = temp[0][5];
-		temp[0][5] = temp[0][4];
-		temp[0][4] = temp[0][3] + temp1;
-		temp[0][3] = temp[0][2];
-		temp[0][2] = temp[0][1];
-		temp[0][1] = temp[0][0];
-		temp[0][0] = temp1 + temp2;
+		tmp1 = temp[7] + EP1512(temp[4]) + CH(temp[4], temp[5],
+				temp[6]) + k_arr[i] + t_arr[i];
+		tmp2 = EP0512(temp[0]) + MAJ(temp[0], temp[1], temp[2]);
+		sha512_swap(&temp[0], tmp1, tmp2);
 		i++;
 	}
 }
 
-unsigned long	*sha512_process(t_content *word,
-								 const unsigned long *k_arr, unsigned long *hash_values)
+void			sha512_process(t_content *string, const unsigned long *k_arr,
+				unsigned long *state)
 {
-	unsigned long	*temp_values;
-	unsigned long	*w_arr;
+	unsigned long	temp[8];
+	unsigned long	*t_arr;
 	int				i;
-	int				done_w_arr;
-	size_t			processed_amount;
+	int				current_done;
+	size_t			size_done;
 
-	done_w_arr = 0;
-	processed_amount = 0;
-	while (done_w_arr != 2)
+	current_done = 0;
+	size_done = 0;
+	while (current_done != 2)
 	{
-		i = 0;
-		temp_values = (unsigned long *)malloc(8 * sizeof(unsigned long));
-		while (i < 8 && ++i)
-			temp_values[i - 1] = hash_values[i - 1];
-		w_arr = (unsigned long *)malloc(80 * sizeof(unsigned long));
-		done_w_arr = sha512_init_w_arr(word, &w_arr, done_w_arr,
-					&processed_amount);
-		sha512_main_loop(&temp_values, k_arr, w_arr);
-		i = 0;
-		while (i < 8 && ++i)
-			hash_values[i - 1] += temp_values[i - 1];
-		free(temp_values);
-		free(w_arr);
+		i = -1;
+		while (++i < 8)
+			temp[i] = state[i];
+		t_arr = (unsigned long *)malloc(sizeof(unsigned long) * 80);
+		current_done = sha512_t_arr(string, &t_arr, current_done,
+									&size_done);
+		sha512_loop(temp, k_arr, t_arr);
+		i = -1;
+		while (++i < 8)
+			state[i] += temp[i];
+		free(t_arr);
 	}
-	return (hash_values);
 }
-

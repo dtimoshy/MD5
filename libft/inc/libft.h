@@ -21,7 +21,6 @@
 # include <stdio.h>
 # include <stdarg.h>
 # include <stdlib.h>
-// # include "../libft/libft.h"
 # include <stdint.h>
 # include <limits.h>
 
@@ -167,12 +166,9 @@ char				*convert_base_d(size_t unsgnd, int base);
 char				*convert_base_opux(size_t unsgnd, int base);
 char				*convert_base_bx(size_t unsgnd, int base);
 int					prec_check_print(int prec, size_t len, char **s, int mode);
-// char				*ft_str_to_upper(char *word);
-// unsigned char		*ft_str_unsigned_new(size_t len);
-// size_t				read_from_fd(int fd, unsigned char **line);
-// void				ft_str_unsigned_del(unsigned char **s);
-// void				ft_str_unsigned_concat(unsigned char **s1, unsigned char *s2, size_t l1, size_t l2);
-unsigned long		ft_pow(size_t x, int pow);
-// char				*ft_str_tolower(char *word);
+void				ft_strjoin_unsigned(unsigned char **s1, unsigned char *s2,
+					size_t l1, size_t l2);
+void				ft_strdel_unsigned(unsigned char **s);
+unsigned char		*ft_strnew_unsigned(size_t len);
 
 #endif

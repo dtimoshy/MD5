@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sha384.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dtimoshy <dtimoshy@student.unit.ua>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/10/29 16:45:32 by dtimoshy          #+#    #+#             */
+/*   Updated: 2018/10/29 16:45:33 by dtimoshy         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ssl_md5.h"
 
-const unsigned long		k_arr_384[] = 
+const unsigned long		g_k_arr_384[] =
 {
 	0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f,
 	0xe9b5dba58189dbbc, 0x3956c25bf348b538, 0x59f111f1b605d019,
@@ -31,23 +43,26 @@ const unsigned long		k_arr_384[] =
 	0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
-void					sha384(t_content *word)
+void					sha384_init(unsigned long *state)
 {
-	unsigned long	*hash_values;
+	state[0] = 0xcbbb9d5dc1059ed8;
+	state[1] = 0x629a292a367cd507;
+	state[2] = 0x9159015a3070dd17;
+	state[3] = 0x152fecd8f70e5939;
+	state[4] = 0x67332667ffc00b31;
+	state[5] = 0x8eb44a8768581511;
+	state[6] = 0xdb0c2e0d64f98fa7;
+	state[7] = 0x47b5481dbefa4fa4;
+}
+
+void					sha384(t_content *string)
+{
+	unsigned long	state[8];
 	int				i;
 
-	hash_values = (unsigned long *)malloc(sizeof(unsigned long) * 8);
-	hash_values[0] = 0xcbbb9d5dc1059ed8;
-	hash_values[1] = 0x629a292a367cd507;
-	hash_values[2] = 0x9159015a3070dd17;
-	hash_values[3] = 0x152fecd8f70e5939;
-	hash_values[4] = 0x67332667ffc00b31;
-	hash_values[5] = 0x8eb44a8768581511;
-	hash_values[6] = 0xdb0c2e0d64f98fa7;
-	hash_values[7] = 0x47b5481dbefa4fa4;
-	hash_values = sha512_process(word, k_arr_384, hash_values);
+	sha384_init(state);
+	sha512_process(string, g_k_arr_384, state);
 	i = -1;
 	while (++i < 6)
-		ft_printf("%.16lx", hash_values[i]);
-	free(hash_values);
+		ft_printf("%.16lx", state[i]);
 }

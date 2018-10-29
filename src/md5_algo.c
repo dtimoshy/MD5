@@ -1,100 +1,102 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   md5_algo.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dtimoshy <dtimoshy@student.unit.ua>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/10/29 16:44:28 by dtimoshy          #+#    #+#             */
+/*   Updated: 2018/10/29 16:44:29 by dtimoshy         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ssl_md5.h"
 
-static unsigned int	assign_f(unsigned int *temp_vars, int i,
-	const unsigned int *k_arr, unsigned int *m_arr)
-{
-	unsigned int	f;
-	int				g;
+#define A(x, y, z) (((x) & (y)) | ((~x) & (z)))
+#define B(x, y, z) (((x) & (z)) | ((y) & (~z)))
+#define C(x, y, z) ((x) ^ (y) ^ (z))
+#define D(x, y, z) ((y) ^ ((x) | (~z)))
+#define ROTLEFT32(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
-	g = 0;
-	f = 0;
-	if (i >= 0 && i <= 15 && (g = i) != -1)
-		f = (temp_vars[1] & temp_vars[2]) | ((~temp_vars[1]) & temp_vars[3]);
-	if (i >= 16 && i <= 31 && (g = (5 * i + 1) % 16) != -1)
-		f = (temp_vars[3] & temp_vars[1]) | ((~temp_vars[3]) & temp_vars[2]);
-	if (i >= 32 && i <= 47 && (g = (3 * i + 5) % 16) != -1)
-		f = temp_vars[1] ^ temp_vars[2] ^ temp_vars[3];
-	if (i >= 48 && i <= 63 && (g = (7 * i) % 16) != -1)
-		f = temp_vars[2] ^ (temp_vars[1] | (~temp_vars[3]));
-	f = f + temp_vars[0] + k_arr[i] + m_arr[g];
-	return (f);
-}
-
-static void			md5_main_loop(const int *s_arr, const unsigned int *k_arr,
-			unsigned int **temp_vars, unsigned int *m_arr)
+static void			md5_loop(const int *s_arr, const unsigned int *k_arr,
+								unsigned int *temp, unsigned int *t_arr)
 {
 	int				i;
-	unsigned int	f;
+	unsigned int	tmp;
+	int				k;
 
 	i = 0;
 	while (i < 64)
 	{
-		f = assign_f(temp_vars[0], i, k_arr, m_arr);
-		temp_vars[0][0] = temp_vars[0][3];
-		temp_vars[0][3] = temp_vars[0][2];
-		temp_vars[0][2] = temp_vars[0][1];
-		temp_vars[0][1] = temp_vars[0][1] +
-		((f << s_arr[i]) | f >> (32 - s_arr[i]));
+		tmp = 0;
+		k = 0;
+		if (i >= 0 && i <= 15 && (k = i) != -1)
+			tmp = A(temp[1], temp[2], temp[3]);
+		if (i >= 16 && i <= 31 && (k = (5 * i + 1) % 16) != -1)
+			tmp = B(temp[1], temp[2], temp[3]);
+		if (i >= 32 && i <= 47 && (k = (3 * i + 5) % 16) != -1)
+			tmp = C(temp[1], temp[2], temp[3]);
+		if (i >= 48 && i <= 63 && (k = (7 * i) % 16) != -1)
+			tmp = D(temp[1], temp[2], temp[3]);
+		tmp = tmp + temp[0] + k_arr[i] + t_arr[k];
+		md5_swap(&temp[0], ROTLEFT32(tmp, s_arr[i]));
 		i++;
 	}
 }
 
-static int			md5_init_m_arr(t_content *word, unsigned int **m_arr,
-	int append_one, size_t *processed_amount)
+static int			md5_t_arr(t_content *string, unsigned int **t_arr,
+								int appendix, size_t *size_done)
 {
 	int		i;
-	int		j;
-	size_t	last;
-	size_t	curr_length;
+	int		k;
+	size_t	rest;
+	size_t	len_now;
 
 	i = -1;
-	curr_length = word->content_len / 8 - (*processed_amount);
-	last = 0;
-	while (++i < 16 && !(j = 0) &&
-		!(m_arr[0][i] = 0))
-		while (j < 4 && ++j)
+	len_now = string->cont_len / 8 - (*size_done);
+	rest = 0;
+	while (++i < 16 && !(k = 0)
+		&& !(t_arr[0][i] = 0))
+		while (k < 4 && ++k)
 		{
-			m_arr[0][i] = (word->content[0] << (8 * (j - 1))) + m_arr[0][i];
-			(last < curr_length && ++last) ? (word->content++) : 0;
+			t_arr[0][i] = (string->content[0] << (8 * (k - 1))) + t_arr[0][i];
+			(rest < len_now && ++rest) ? (string->content++) : 0;
 		}
-	(*processed_amount) += last;
-	if (curr_length < 64 && append_one != 1)
-		m_arr[0][last / 4] += (size_t)ft_pow(2, (last % 4 + 1) * 8 - 1);
-	if (curr_length < 56)
+	(*size_done) += rest;
+	if (len_now < 64 && appendix != 1)
+		t_arr[0][rest / 4] += (size_t)ft_pow(2, (rest % 4 + 1) * 8 - 1);
+	if (len_now < 56)
 	{
-		m_arr[0][14] = (unsigned int)word->content_len % ft_pow(2, 31);
-		m_arr[0][15] = (unsigned int)word->content_len / ft_pow(2, 31);
+		t_arr[0][14] = (unsigned int)string->cont_len % ft_pow(2, 31);
+		t_arr[0][15] = (unsigned int)string->cont_len / ft_pow(2, 31);
 		return (2);
 	}
-	return (curr_length < 64);
+	return (len_now < 64);
 }
 
-unsigned int		*md5_process(t_content *word,
-								 unsigned int *hash_values, const int *s_arr, const unsigned int *k_arr)
+void				md5_process(t_content *string, unsigned int *state,
+						const int *s_arr, const unsigned int *k_arr)
 {
-	unsigned int	*temp_vars;
+	unsigned int	temp[4];
 	int				i;
-	unsigned int	*m_arr;
-	int				done_with_m_arr;
-	size_t			processed_amount;
+	unsigned int	*t_arr;
+	int				current_done;
+	size_t			size_done;
 
-	done_with_m_arr = 0;
-	processed_amount = 0;
-	while (done_with_m_arr != 2)
+	current_done = 0;
+	size_done = 0;
+	while (current_done != 2)
 	{
-		temp_vars = (unsigned int *)malloc(4 * sizeof(unsigned int));
-		i = 0;
-		while (i < 4 && ++i)
-			temp_vars[i - 1] = hash_values[i - 1];
-		m_arr = (unsigned int *)malloc(16 * sizeof(unsigned int));
-		(done_with_m_arr = md5_init_m_arr(word, &m_arr,
-			done_with_m_arr, &processed_amount));
-		md5_main_loop(s_arr, k_arr, &temp_vars, m_arr);
-		i = 0;
-		while (i < 4 && ++i)
-			hash_values[i - 1] += temp_vars[i - 1];
-		free(temp_vars);
-		free(m_arr);
+		i = -1;
+		while (++i < 4)
+			temp[i] = state[i];
+		t_arr = (unsigned int *)malloc(16 * sizeof(unsigned int));
+		current_done = md5_t_arr(string, &t_arr,
+			current_done, &size_done);
+		md5_loop(s_arr, k_arr, temp, t_arr);
+		i = -1;
+		while (++i < 4)
+			state[i] += temp[i];
+		free(t_arr);
 	}
-	return (hash_values);
 }

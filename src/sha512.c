@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sha512.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dtimoshy <dtimoshy@student.unit.ua>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/10/29 16:45:42 by dtimoshy          #+#    #+#             */
+/*   Updated: 2018/10/29 16:45:43 by dtimoshy         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ssl_md5.h"
 
-const unsigned long		k_arr_512[] = 
+const unsigned long		g_k_arr_512[] =
 {
 	0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f,
 	0xe9b5dba58189dbbc, 0x3956c25bf348b538, 0x59f111f1b605d019,
@@ -31,23 +43,26 @@ const unsigned long		k_arr_512[] =
 	0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
-void					sha512(t_content *word)
+void					sha512_init(unsigned long *state)
 {
-	unsigned long	*hash_values;
+	state[0] = 0x6a09e667f3bcc908;
+	state[1] = 0xbb67ae8584caa73b;
+	state[2] = 0x3c6ef372fe94f82b;
+	state[3] = 0xa54ff53a5f1d36f1;
+	state[4] = 0x510e527fade682d1;
+	state[5] = 0x9b05688c2b3e6c1f;
+	state[6] = 0x1f83d9abfb41bd6b;
+	state[7] = 0x5be0cd19137e2179;
+}
+
+void					sha512(t_content *string)
+{
+	unsigned long	state[8];
 	int				i;
 
-	hash_values = (unsigned long *)malloc(sizeof(unsigned long) * 8);
-	hash_values[0] = 0x6a09e667f3bcc908;
-	hash_values[1] = 0xbb67ae8584caa73b;
-	hash_values[2] = 0x3c6ef372fe94f82b;
-	hash_values[3] = 0xa54ff53a5f1d36f1;
-	hash_values[4] = 0x510e527fade682d1;
-	hash_values[5] = 0x9b05688c2b3e6c1f;
-	hash_values[6] = 0x1f83d9abfb41bd6b;
-	hash_values[7] = 0x5be0cd19137e2179;
-	hash_values = sha512_process(word, k_arr_512, hash_values);
+	sha512_init(state);
+	sha512_process(string, g_k_arr_512, state);
 	i = -1;
 	while (++i < 8)
-		ft_printf("%.16lx", hash_values[i]);
-	free(hash_values);
+		ft_printf("%.16lx", state[i]);
 }
