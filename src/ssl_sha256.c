@@ -25,7 +25,7 @@ unsigned long		rot_r(unsigned long value, int amount, int bits)
 	return ((value >> amount) | (value << (bits - amount)));
 }
 
-void				ssl_sha256(t_word *word)
+void				sha256(t_word *word)
 {
 	unsigned int	*hash_values;
 	int				i;

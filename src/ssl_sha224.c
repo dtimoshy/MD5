@@ -20,7 +20,7 @@ const unsigned int	k_arr_224[] =
 		0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-void				ssl_sha224(t_word *word)
+void				sha224(t_word *word)
 {
 	unsigned int	*hash_values;
 	int				i;

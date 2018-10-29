@@ -31,7 +31,7 @@ const unsigned long		k_arr_384[] =
 	0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
-void					ssl_sha384(t_word *word)
+void					sha384(t_word *word)
 {
 	unsigned long	*hash_values;
 	int				i;

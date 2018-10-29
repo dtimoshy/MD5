@@ -25,7 +25,7 @@ static const unsigned int	k_arr_md5[] =
 	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 };
 
-void				ssl_md5(t_word *word)
+void				md5(t_word *word)
 {
 	int i;
 	int j;

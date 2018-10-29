@@ -31,7 +31,7 @@ const unsigned long		k_arr_512[] =
 	0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
-void					ssl_sha512(t_word *word)
+void					sha512(t_word *word)
 {
 	unsigned long	*hash_values;
 	int				i;

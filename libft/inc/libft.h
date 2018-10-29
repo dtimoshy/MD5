@@ -167,12 +167,12 @@ char				*convert_base_d(size_t unsgnd, int base);
 char				*convert_base_opux(size_t unsgnd, int base);
 char				*convert_base_bx(size_t unsgnd, int base);
 int					prec_check_print(int prec, size_t len, char **s, int mode);
-char				*ft_str_to_upper(char *word);
-unsigned char		*ft_str_unsigned_new(size_t len);
-size_t				read_from_fd(int fd, unsigned char **line);
-void				ft_str_unsigned_del(unsigned char **s);
-void				ft_str_unsigned_concat(unsigned char **s1, unsigned char *s2, size_t l1, size_t l2);
+// char				*ft_str_to_upper(char *word);
+// unsigned char		*ft_str_unsigned_new(size_t len);
+// size_t				read_from_fd(int fd, unsigned char **line);
+// void				ft_str_unsigned_del(unsigned char **s);
+// void				ft_str_unsigned_concat(unsigned char **s1, unsigned char *s2, size_t l1, size_t l2);
 unsigned long		ft_pow(size_t x, int pow);
-char				*ft_str_tolower(char *word);
+// char				*ft_str_tolower(char *word);
 
 #endif
