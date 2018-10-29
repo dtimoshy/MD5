@@ -25,28 +25,41 @@ static const unsigned int	k_arr_md5[] =
 	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 };
 
-void				md5(t_word *word)
+unsigned long	ft_pow(size_t x, int pow)
+{
+	unsigned long res;
+
+	res = 1;
+	while (pow > 0)
+	{
+		res = res * x;
+		pow--;
+	}
+	return (res);
+}
+
+void				md5(t_content *word)
 {
 	int i;
 	int j;
-	unsigned int	*hash_values;
+	unsigned int	hash_state[4];
 
-	hash_values = (unsigned int *)malloc(sizeof(unsigned int) * 4);
-	hash_values[0] = 0x67452301;
-	hash_values[1] = 0xefcdab89;
-	hash_values[2] = 0x98badcfe;
-	hash_values[3] = 0x10325476;
-	hash_values = md5_start_processing(word, hash_values, s_arr_md5, k_arr_md5);
+//	hash_state = (unsigned int *)malloc(sizeof(unsigned int) * 4);
+	hash_state[0] = 0x67452301;
+	hash_state[1] = 0xefcdab89;
+	hash_state[2] = 0x98badcfe;
+	hash_state[3] = 0x10325476;
+	hash_state = md5_process(word, hash_state, s_arr_md5, k_arr_md5);
 	i = -1;
 	while (++i < 4)
 	{
 		j = 1;
 		while ( j < 5)
 		{
-			ft_printf("%.2x", hash_values[i] % 256);
-			hash_values[i] /= 256;
+			ft_printf("%.2x", hash_state[i] % 256);
+			hash_state[i] /= 256;
 			j++;
 		}
 	}
-	free(hash_values);
+//	free(hash_state);
 }

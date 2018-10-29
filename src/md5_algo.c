@@ -39,7 +39,7 @@ static void			md5_main_loop(const int *s_arr, const unsigned int *k_arr,
 	}
 }
 
-static int			md5_init_m_arr(t_word *word, unsigned int **m_arr,
+static int			md5_init_m_arr(t_content *word, unsigned int **m_arr,
 	int append_one, size_t *processed_amount)
 {
 	int		i;
@@ -48,29 +48,29 @@ static int			md5_init_m_arr(t_word *word, unsigned int **m_arr,
 	size_t	curr_length;
 
 	i = -1;
-	curr_length = word->length / 8 - (*processed_amount);
+	curr_length = word->content_len / 8 - (*processed_amount);
 	last = 0;
 	while (++i < 16 && !(j = 0) &&
 		!(m_arr[0][i] = 0))
 		while (j < 4 && ++j)
 		{
-			m_arr[0][i] = (word->word[0] << (8 * (j - 1))) + m_arr[0][i];
-			(last < curr_length && ++last) ? (word->word++) : 0;
+			m_arr[0][i] = (word->content[0] << (8 * (j - 1))) + m_arr[0][i];
+			(last < curr_length && ++last) ? (word->content++) : 0;
 		}
 	(*processed_amount) += last;
 	if (curr_length < 64 && append_one != 1)
 		m_arr[0][last / 4] += (size_t)ft_pow(2, (last % 4 + 1) * 8 - 1);
 	if (curr_length < 56)
 	{
-		m_arr[0][14] = (unsigned int)word->length % ft_pow(2, 31);
-		m_arr[0][15] = (unsigned int)word->length / ft_pow(2, 31);
+		m_arr[0][14] = (unsigned int)word->content_len % ft_pow(2, 31);
+		m_arr[0][15] = (unsigned int)word->content_len / ft_pow(2, 31);
 		return (2);
 	}
 	return (curr_length < 64);
 }
 
-unsigned int		*md5_start_processing(t_word *word,
-				unsigned int *hash_values, const int *s_arr, const unsigned int *k_arr)
+unsigned int		*md5_process(t_content *word,
+								 unsigned int *hash_values, const int *s_arr, const unsigned int *k_arr)
 {
 	unsigned int	*temp_vars;
 	int				i;

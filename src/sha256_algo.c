@@ -18,7 +18,7 @@ static void		sha256_append_w_arr(unsigned int **w_arr)
 	}
 }
 
-static int		sha256_init_w_arr(t_word *word, unsigned int **w_arr,
+static int		sha256_init_w_arr(t_content *word, unsigned int **w_arr,
 			int append_one, size_t *processed_amount)
 {
 	size_t			curr_length;
@@ -26,14 +26,14 @@ static int		sha256_init_w_arr(t_word *word, unsigned int **w_arr,
 	int				j;
 	size_t			last_byte;
 
-	curr_length = word->length / 8 - (*processed_amount);
+	curr_length = word->content_len / 8 - (*processed_amount);
 	i = 0;
 	last_byte = 0;
 	while (i < 16 && ++i && !(j = 0))
 		while (j < 4 && ++j)
 		{
-			w_arr[0][i - 1] = (w_arr[0][i - 1] << 8) + word->word[0];
-			(last_byte < curr_length && ++last_byte) ? (word->word++) : 0;
+			w_arr[0][i - 1] = (w_arr[0][i - 1] << 8) + word->content[0];
+			(last_byte < curr_length && ++last_byte) ? (word->content++) : 0;
 		}
 	(*processed_amount) += last_byte;
 	if (curr_length < 64 && append_one != 1)
@@ -41,8 +41,8 @@ static int		sha256_init_w_arr(t_word *word, unsigned int **w_arr,
 					(size_t)ft_pow(2, (4 - last_byte % 4) * 8 - 1);
 	if (curr_length < 56)
 	{
-		w_arr[0][14] = (unsigned int)word->length / ft_pow(2, 31);
-		w_arr[0][15] = (unsigned int)word->length % ft_pow(2, 31);
+		w_arr[0][14] = (unsigned int)word->content_len / ft_pow(2, 31);
+		w_arr[0][15] = (unsigned int)word->content_len % ft_pow(2, 31);
 	}
 	sha256_append_w_arr(w_arr);
 	return ((curr_length < 64) + (curr_length < 56));
@@ -78,8 +78,8 @@ static void		sha256_main_loop(unsigned int **temp,
 	}
 }
 
-unsigned int	*sha256_start_processing(t_word *word,
-	const unsigned int *k_arr, unsigned int *hash_values)
+unsigned int	*sha256_process(t_content *word,
+								const unsigned int *k_arr, unsigned int *hash_values)
 {
 	unsigned int	*temp_values;
 	unsigned int	*w_arr;

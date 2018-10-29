@@ -18,7 +18,7 @@ static void		sha512_append_w_arr(unsigned long **w_arr)
 	}
 }
 
-static int		sha512_init_w_arr(t_word *word, unsigned long **w_arr,
+static int		sha512_init_w_arr(t_content *word, unsigned long **w_arr,
 		int append_one, size_t *processed_amount)
 {
 	unsigned long	curr_length;
@@ -26,22 +26,22 @@ static int		sha512_init_w_arr(t_word *word, unsigned long **w_arr,
 	int				j;
 	size_t			last_byte;
 
-	curr_length = word->length / 8 - (*processed_amount);
+	curr_length = word->content_len / 8 - (*processed_amount);
 	i = 0;
 	last_byte = 0;
 	while (i < 16 && ++i && !(j = 0))
 		while (j < 8 && ++j)
 		{
-			w_arr[0][i - 1] = (w_arr[0][i - 1] << 8) + word->word[0];
-			(last_byte < curr_length && ++last_byte) ? (word->word++) : 0;
+			w_arr[0][i - 1] = (w_arr[0][i - 1] << 8) + word->content[0];
+			(last_byte < curr_length && ++last_byte) ? (word->content++) : 0;
 		}
 	(*processed_amount) += last_byte;
 	if (curr_length < 128 && append_one != 1)
 		w_arr[0][last_byte / 8] += ft_pow(2, (8 - last_byte % 8) * 8 - 1);
 	if (curr_length < 112)
 	{
-		w_arr[0][14] = word->length / ft_pow(2, 63);
-		w_arr[0][15] = word->length % ft_pow(2, 63);
+		w_arr[0][14] = word->content_len / ft_pow(2, 63);
+		w_arr[0][15] = word->content_len % ft_pow(2, 63);
 	}
 	sha512_append_w_arr(w_arr);
 	return ((curr_length < 128) + (curr_length < 112));
@@ -77,8 +77,8 @@ static void		sha512_main_loop(unsigned long **temp,
 	}
 }
 
-unsigned long	*sha512_start_processing(t_word *word,
-	const unsigned long *k_arr, unsigned long *hash_values)
+unsigned long	*sha512_process(t_content *word,
+								 const unsigned long *k_arr, unsigned long *hash_values)
 {
 	unsigned long	*temp_values;
 	unsigned long	*w_arr;

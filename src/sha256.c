@@ -25,7 +25,7 @@ unsigned long		rot_r(unsigned long value, int amount, int bits)
 	return ((value >> amount) | (value << (bits - amount)));
 }
 
-void				sha256(t_word *word)
+void				sha256(t_content *word)
 {
 	unsigned int	*hash_values;
 	int				i;
@@ -39,7 +39,7 @@ void				sha256(t_word *word)
 	hash_values[5] = 0x9b05688c;
 	hash_values[6] = 0x1f83d9ab;
 	hash_values[7] = 0x5be0cd19;
-	hash_values = sha256_start_processing(word, k_arr_256, hash_values);
+	hash_values = sha256_process(word, k_arr_256, hash_values);
 	i = -1;
 	while (++i < 8)
 		ft_printf("%.8x", hash_values[i]);

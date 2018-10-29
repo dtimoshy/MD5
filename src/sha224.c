@@ -20,7 +20,7 @@ const unsigned int	k_arr_224[] =
 		0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-void				sha224(t_word *word)
+void				sha224(t_content *word)
 {
 	unsigned int	*hash_values;
 	int				i;
@@ -34,7 +34,7 @@ void				sha224(t_word *word)
 	hash_values[5] = 0x68581511;
 	hash_values[6] = 0x64f98fa7;
 	hash_values[7] = 0xbefa4fa4;
-	hash_values = sha256_start_processing(word, k_arr_224, hash_values);
+	hash_values = sha256_process(word, k_arr_224, hash_values);
 	i = -1;
 	while (++i < 7)
 		ft_printf("%.8x", hash_values[i]);

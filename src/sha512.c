@@ -31,7 +31,7 @@ const unsigned long		k_arr_512[] =
 	0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
-void					sha512(t_word *word)
+void					sha512(t_content *word)
 {
 	unsigned long	*hash_values;
 	int				i;
@@ -45,7 +45,7 @@ void					sha512(t_word *word)
 	hash_values[5] = 0x9b05688c2b3e6c1f;
 	hash_values[6] = 0x1f83d9abfb41bd6b;
 	hash_values[7] = 0x5be0cd19137e2179;
-	hash_values = sha512_start_processing(word, k_arr_512, hash_values);
+	hash_values = sha512_process(word, k_arr_512, hash_values);
 	i = -1;
 	while (++i < 8)
 		ft_printf("%.16lx", hash_values[i]);
