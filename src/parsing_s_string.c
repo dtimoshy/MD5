@@ -17,8 +17,8 @@ static int		smth_after_s(t_ssl_md5 *handler, char *argv,
 {
 	if (!handler->q && !handler->r)
 		ft_printf("%s (\"%s\") = ", ft_strto(handler->name, 1), &argv[k + 1]);
-	string->content = (unsigned char *)&argv[k + 1];
-	string->cont_len = ft_strlen(&argv[k + 1]) * 8;
+	string->content = (unsigned char *)ft_strdup(&argv[k + 1]);
+	string->cont_len = ft_strlen(&argv[k + 1]);
 	handler->f(string);
 	if (!handler->q && handler->r)
 		ft_printf(" \"%s\"", &argv[k + 1]);
@@ -35,8 +35,8 @@ void			parse_s_string(t_ssl_md5 *handler, char **argv, int *i, int *k)
 		*k = smth_after_s(handler, argv[*i], *k, string);
 	else
 	{
-		string->content = (unsigned char *)argv[++(*i)];
-		string->cont_len = ft_strlen(argv[*i]) * 8;
+		string->content = (unsigned char *)ft_strdup(argv[++(*i)]);
+		string->cont_len = ft_strlen(argv[*i]);
 		if (!handler->q && !handler->r)
 			ft_printf("%s (\"%s\") = ", ft_strto(handler->name, 1), argv[*i]);
 		handler->f(string);

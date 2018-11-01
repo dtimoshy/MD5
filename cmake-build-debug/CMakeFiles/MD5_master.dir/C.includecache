@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../inc/ft_ssl_md5.h
+libft.h
+../inc/libft.h
+
+../libft/inc/libft.h
+sys/types.h
+-
+sys/stat.h
+-
+fcntl.h
+-
+unistd.h
+-
+stdlib.h
+-
+string.h
+-
+stdio.h
+-
+stdarg.h
+-
+stdlib.h
+-
+stdint.h
+-
+limits.h
+-
+
+/Users/dtimoshyn/Desktop/MD5-master/src/sha512.c
+ft_ssl_md5.h
+/Users/dtimoshyn/Desktop/MD5-master/src/ft_ssl_md5.h
+

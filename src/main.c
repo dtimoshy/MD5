@@ -55,6 +55,7 @@ static void				start_ssl(int argc, char **argv)
 	handler->stdin_write = 0;
 	parse_arguments(handler, argv, argc);
 	ft_strdel(&handler->name);
+	system("leaks -q ft_ssl");
 	free(handler);
 }
 
@@ -70,10 +71,9 @@ static void				no_arguments(void)
 	{
 		i = -1;
 		argc = 0;
-		if (str && ft_strequ(str, "exit"))
+		if (ft_strequ(str, "exit"))
 			exit(0);
-		if (str)
-			split = ft_strsplit(str, ' ');
+		split = ft_strsplit(str, ' ');
 		while (str && str[++i])
 			if ((str[i] == ' ' && str[i + 1] != ' ' && str[i + 1])
 				|| (i == 0 && str[i] != ' '))

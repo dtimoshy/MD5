@@ -17,46 +17,43 @@
 
 static void			parse_fd_nul(t_ssl_md5 *handler)
 {
-	unsigned char	*str;
-	t_content		*content;
+    t_content		*content;
 
-	if (handler->p > 1)
-	{
-		content = (t_content *)malloc(sizeof(t_content));
-		content->content = (unsigned char *)"";
-		content->cont_len = 0;
-		handler->f(content);
-		ft_printf("\n");
-		free(content);
-		return ;
-	}
-	str = ft_strnew_unsigned(0);
-	content = (t_content *)malloc(sizeof(t_content));
-	msg_from_fd(0, &str, content);
-	if (handler->p)
-		ft_printf("%s", str);
-	handler->f(content);
-	ft_printf("\n");
-	free(content);
-	ft_strdel_unsigned(&str);
+    if (handler->p > 1)
+    {
+        content = (t_content *)malloc(sizeof(t_content));
+        content->content = (unsigned char *)ft_strdup("");
+//        content->content = (unsigned char *)"";
+        content->cont_len = 0;
+        handler->f(content);
+        ft_printf("\n");
+        free(content);
+        return ;
+    }
+    content = (t_content *)malloc(sizeof(t_content));
+    md_read_from_fd(0, content, BUF_READ);
+    if (handler->p)
+        ft_printf("%s", content->content);
+    handler->f(content);
+    ft_printf("\n");
+    free(content);
 }
 
 static void			parse_fd(t_ssl_md5 *handler, int fd, char *name)
 {
-	unsigned char	*line;
 	t_content		*content;
+	struct stat	    st;
 
 	if (!handler->r && !handler->q)
 		ft_printf("%s (%s) = ", ft_strto(handler->name, 1), name);
-	line = ft_strnew_unsigned(0);
 	content = (t_content *)malloc(sizeof(t_content));
-	msg_from_fd(fd, &line, content);
+	stat(name, &st);
+	md_read_from_fd(fd, content, (size_t)st.st_size);
 	handler->f(content);
 	if (handler->r && !handler->q)
 		ft_printf(" %s", name);
 	ft_printf("\n");
 	free(content);
-	ft_strdel_unsigned(&line);
 }
 
 static void			parce_flags(t_ssl_md5 *handler, char **argv,

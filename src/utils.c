@@ -31,30 +31,37 @@ char			*ft_strto(char *string, int mode)
 	return (string);
 }
 
-void			msg_from_fd(int fd, unsigned char **line, t_content *string)
+void	*ft_memjoin(void *dest, void *src, size_t d_len, size_t s_len)
 {
-	unsigned char	*temp;
-	size_t			ret;
-	int				i;
-	struct stat		st;
-	size_t			len;
+    void *ret;
 
-	fstat(fd, &st);
-	ret = 0;
-	len = st.st_size;
-	if (fd == 0)
-		len = BUF_READ;
-	temp = ft_strnew_unsigned(len);
-	while ((i = read(fd, temp, len)) > 0)
-	{
-		ret += i;
-		ft_strjoin_unsigned(line, temp, ret - i, i);
-		ft_strdel_unsigned(&temp);
-		temp = ft_strnew_unsigned(len);
-	}
-	ft_strdel_unsigned(&temp);
-	string->content = *line;
-	string->cont_len = ret * 8;
+    if (!dest && !src)
+        return (NULL);
+    ret = ft_memalloc(d_len + s_len + 1);
+    if (!ret)
+        return (NULL);
+    ft_memcpy(ret, dest, d_len);
+    ft_memcpy(&ret[d_len], src, s_len);
+    ft_memdel(&dest);
+    return (ret);
+}
+
+void	md_read_from_fd(int fd, t_content *handler, size_t buf_size)
+{
+    void	*buf;
+    ssize_t	bytes;
+
+    buf = ft_memalloc(buf_size);
+    handler->content = ft_memalloc(0);
+    handler->cont_len = 0;
+    while ((bytes = read(fd, buf, buf_size)) > 0)
+    {
+        handler->content = ft_memjoin(handler->content, buf,
+                                  handler->cont_len, (size_t)bytes);
+        handler->cont_len += bytes;
+        ft_bzero(buf, buf_size);
+    }
+    ft_memdel(&buf);
 }
 
 unsigned long	ft_pow(size_t x, int pow)
