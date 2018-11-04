@@ -23,7 +23,6 @@ static void			parse_fd_nul(t_ssl_md5 *handler)
     {
         content = (t_content *)malloc(sizeof(t_content));
         content->content = (unsigned char *)ft_strdup("");
-//        content->content = (unsigned char *)"";
         content->cont_len = 0;
         handler->f(content);
         ft_printf("\n");

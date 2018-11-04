@@ -14,24 +14,7 @@
 
 extern	t_ssl_mode	g_mode_change[];
 
-void				ft_mode_error(char *cmd)
-{
-	int i;
-
-	ft_printf("ft_ssl: Error: '%s' is an invalid command.\n\n\
-Standart commands:\n\n", cmd);
-	ft_printf("Message Digest commands:\n");
-	i = 0;
-	while (g_mode_change[i].name)
-	{
-		ft_printf("%s\n", g_mode_change[i].name);
-		i++;
-	}
-	ft_printf("\nCipher commands:\n\n");
-	exit(1);
-}
-
-void				ft_flag_error(t_ssl_md5 *flags, char a, int mode)
+void	ft_flag_error(t_ssl_md5 *flags, char a, int mode)
 {
 	if (mode == 0)
 		ft_printf("%s: illegal option -- %c\n", ft_strto(flags->name, 0), a);
@@ -43,7 +26,7 @@ void				ft_flag_error(t_ssl_md5 *flags, char a, int mode)
 	exit(1);
 }
 
-void				ft_error_opening(char *name, char *func, char *error)
+void	ft_error_opening(char *name, char *func, char *error)
 {
 	ft_printf("%s: %s: %s\n", ft_strto(name, 0), func, error);
 }

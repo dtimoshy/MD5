@@ -15,7 +15,7 @@
 #include "ft_ssl_md5.h"
 #include <sys/stat.h>
 
-char			*ft_strto(char *string, int mode)
+char	*ft_strto(char *string, int mode)
 {
 	size_t i;
 
@@ -62,17 +62,4 @@ void	md_read_from_fd(int fd, t_content *handler, size_t buf_size)
         ft_bzero(buf, buf_size);
     }
     ft_memdel(&buf);
-}
-
-unsigned long	ft_pow(size_t x, int pow)
-{
-	unsigned long res;
-
-	res = 1;
-	while (pow > 0)
-	{
-		res = res * x;
-		pow--;
-	}
-	return (res);
 }

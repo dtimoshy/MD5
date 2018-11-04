@@ -17,10 +17,10 @@
 
 const t_ssl_mode		g_mode_change[] = {
 	{ "md5", &md5},
-	{"sha256", &sha256},
 	{"sha224", &sha224},
-	{"sha512", &sha512},
+	{"sha256", &sha256},
 	{"sha384", &sha384},
+	{"sha512", &sha512},
 	{ NULL, NULL}
 };
 
@@ -31,12 +31,24 @@ static t_ssl_mode		get_mode(char **argv)
 	i = 0;
 	while (g_mode_change[i].name)
 	{
-		if (ft_strequ(argv[0], g_mode_change[i].name))
+		if (!ft_strcmp(argv[0], g_mode_change[i].name))
 			break ;
 		i++;
 	}
 	if (g_mode_change[i].name == NULL)
-		ft_mode_error(argv[0]);
+	{
+		ft_printf("ft_ssl: Error: '%s' is an invalid command.\n\n\
+Standart commands:\n\n", argv[0]);
+		ft_printf("Message Digest commands:\n");
+		i = 0;
+		while (g_mode_change[i].name)
+		{
+			ft_printf("%s\n", g_mode_change[i].name);
+			i++;
+		}
+		ft_printf("\nCipher commands:\n\n");
+		exit(1);
+	}
 	return (g_mode_change[i]);
 }
 
@@ -55,7 +67,6 @@ static void				start_ssl(int argc, char **argv)
 	handler->stdin_write = 0;
 	parse_arguments(handler, argv, argc);
 	ft_strdel(&handler->name);
-	system("leaks -q ft_ssl");
 	free(handler);
 }
 
@@ -71,6 +82,7 @@ static void				no_arguments(void)
 	{
 		i = -1;
 		argc = 0;
+		str = ft_strtrim(str);
 		if (ft_strequ(str, "exit"))
 			exit(0);
 		split = ft_strsplit(str, ' ');
