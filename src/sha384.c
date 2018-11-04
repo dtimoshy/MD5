@@ -14,7 +14,7 @@
 
 extern unsigned long	g_512[];
 
-static void					sha384_init_string(
+static void				sha384_init_string(
 		unsigned long *tmp_arr, const unsigned char *string)
 {
 	int i;
@@ -34,38 +34,40 @@ static void					sha384_init_string(
 	while (i < 80)
 	{
 		tmp_arr[i] = (((tmp_arr[i - 2] >> 19) | (tmp_arr[i - 2] << (64 - 19)))
-					  ^ ((tmp_arr[i - 2] >> 61) | (tmp_arr[i - 2] << (64 - 61))) ^
-					  (tmp_arr[i - 2] >> 6)) + tmp_arr[i - 7];
+			^ ((tmp_arr[i - 2] >> 61) | (tmp_arr[i - 2] << (64 - 61))) ^
+			(tmp_arr[i - 2] >> 6)) + tmp_arr[i - 7];
 		tmp_arr[i] += (((tmp_arr[i - 15] >> 1) | (tmp_arr[i - 15] << (64 - 1)))
-					   ^ ((tmp_arr[i - 15] >> 8) | (tmp_arr[i - 15] << (64 - 8)))
-					   ^ (tmp_arr[i - 15] >> 7)) + tmp_arr[i - 16];
+			^ ((tmp_arr[i - 15] >> 8) | (tmp_arr[i - 15] << (64 - 8)))
+			^ (tmp_arr[i - 15] >> 7)) + tmp_arr[i - 16];
 		i++;
 	}
 }
 
-static void				sha384_transform_loop(unsigned long *temp, unsigned long *tmp_arr)
+static void				sha384_transform_loop(unsigned long *temp,
+						unsigned long *tmp_arr)
 {
 	unsigned long	t1;
 	unsigned long	t2;
-	int 			i;
+	int				i;
 
 	i = -1;
 	while (++i < 80)
 	{
 		t1 = temp[7] + (((temp[4] >> 14) | (temp[4] << (64 - 14)))
-				^ ((temp[4] >> 18) | (temp[4] << (64 - 18))) ^
-				((temp[4] >> 41) | (temp[4] << (64 - 41))));
-		t1 += ((temp[4] & temp[5]) ^ (~temp[4] & temp[6])) + g_512[i] + tmp_arr[i];
+			^ ((temp[4] >> 18) | (temp[4] << (64 - 18))) ^
+			((temp[4] >> 41) | (temp[4] << (64 - 41))));
+		t1 += ((temp[4] & temp[5]) ^ (~temp[4] & temp[6]))
+			+ g_512[i] + tmp_arr[i];
 		t2 = (((temp[0] >> 28) | (temp[0] << (64 - 28)))
-			  ^ ((temp[0] >> 34) | (temp[0] << (64 - 34))) ^
-			  ((temp[0] >> 39) | (temp[0] << (64 - 39))));
+			^ ((temp[0] >> 34) | (temp[0] << (64 - 34))) ^
+			((temp[0] >> 39) | (temp[0] << (64 - 39))));
 		t2 += ((temp[0] & temp[1]) ^ (temp[0] & temp[2]) ^
-			   (temp[1] & temp[2]));
+			(temp[1] & temp[2]));
 		sha512_swap(temp, t1, t2);
 	}
 }
 
-static void						sha384_process(
+static void				sha384_process(
 		unsigned long *state, const unsigned char *string)
 {
 	unsigned long	tmp_arr[80];
@@ -82,12 +84,12 @@ static void						sha384_process(
 		state[i] += temp[i];
 }
 
-unsigned char	*sha384_string_pad(t_content *string)
+unsigned char			*sha384_string_pad(t_content *string)
 {
 	size_t			bits;
 	size_t			done_len;
 	unsigned char	*done_str;
-	int 			i;
+	int				i;
 
 	i = -1;
 	bits = string->cont_len * 8;
@@ -101,7 +103,7 @@ unsigned char	*sha384_string_pad(t_content *string)
 	return (done_str);
 }
 
-void	sha384(t_content *string)
+void					sha384(t_content *string)
 {
 	unsigned long	state[8];
 	unsigned char	*to_free;

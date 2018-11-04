@@ -25,7 +25,7 @@ static void				sha224_init_string_loop(
 	while (i < 16)
 	{
 		tmp_arr[i] = (string[j] << 24) | (string[j + 1] << 16)
-					 | (string[j + 2] << 8) | (string[j + 3]);
+		| (string[j + 2] << 8) | (string[j + 3]);
 		i++;
 		j += 4;
 	}
@@ -41,11 +41,12 @@ static void				sha224_init_string_loop(
 	}
 }
 
-static void				sha224_transform_loop(unsigned int *temp, unsigned int *tmp_arr)
+static void				sha224_transform_loop(unsigned int *temp,
+						unsigned int *tmp_arr)
 {
 	unsigned int	t1;
 	unsigned int	t2;
-	int i;
+	int				i;
 
 	i = -1;
 	while (++i < 64)
@@ -53,7 +54,8 @@ static void				sha224_transform_loop(unsigned int *temp, unsigned int *tmp_arr)
 		t1 = temp[7] + (((temp[4] >> 6) | (temp[4] << (32 - 6)))
 				^ ((temp[4] >> 11) | (temp[4] << (32 - 11))) ^
 				((temp[4] >> 25) | (temp[4] << (32 - 25))));
-		t1 += ((temp[4] & temp[5]) ^ (~temp[4] & temp[6])) + g_256[i] + tmp_arr[i];
+		t1 += ((temp[4] & temp[5]) ^ (~temp[4] & temp[6]))
+				+ g_256[i] + tmp_arr[i];
 		t2 = (((temp[0] >> 2) | (temp[0] << (32 - 2)))
 				^ ((temp[0] >> 13) | (temp[0] << (32 - 13))) ^
 				((temp[0] >> 22) | (temp[0] << (32 - 22))));
@@ -80,12 +82,12 @@ void					sha224_process(
 		state[i] += temp[i];
 }
 
-unsigned char	*sha224_string_pad(t_content *string)
+unsigned char			*sha224_string_pad(t_content *string)
 {
 	size_t			bits;
 	size_t			done_len;
 	unsigned char	*done_str;
-	int 			i;
+	int				i;
 
 	i = -1;
 	bits = string->cont_len * 8;
@@ -99,7 +101,7 @@ unsigned char	*sha224_string_pad(t_content *string)
 	return (done_str);
 }
 
-void		sha224(t_content *string)
+void					sha224(t_content *string)
 {
 	unsigned char	*to_free;
 	unsigned long	state[8];

@@ -40,7 +40,8 @@ typedef struct		s_ssl_mode
 void				parse_arguments(t_ssl_md5 *handler, char **argv, int argc);
 void				parse_s_string(t_ssl_md5 *handler, char **argv,
 					int *i, int *k);
-void				md_read_from_fd(int fd, t_content *handler, size_t buf_size);
+void				ft_read_from_fd(int fd, t_content *handler,
+									size_t buf_size);
 void				ft_flag_error(t_ssl_md5 *flags, char a, int mode);
 void				ft_error_opening(char *name, char *func, char *error);
 char				*ft_strto(char *string, int mode);

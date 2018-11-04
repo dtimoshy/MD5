@@ -16,11 +16,12 @@ extern const unsigned	g_smd5[];
 
 extern const unsigned	g_kmd5[];
 
-static void		md5_transform_loop(unsigned int *temp, const unsigned int *string)
+static void				md5_transform_loop(unsigned int *temp,
+						const unsigned int *string)
 {
-	unsigned int 	k;
-	int 			g;
-	int 			i;
+	unsigned int	k;
+	int				g;
+	int				i;
 
 	i = -1;
 	while (++i < 64)
@@ -34,10 +35,13 @@ static void		md5_transform_loop(unsigned int *temp, const unsigned int *string)
 		else if ((g = (7 * i) % 16) != -1)
 			k = temp[2] ^ (temp[1] | ~temp[3]);
 		md5_swap(temp, ((temp[0] + k + g_kmd5[i] + string[g]) << g_smd5[i])
-					   | ((temp[0] + k + g_kmd5[i] + string[g]) >> (32 - g_smd5[i])));
+			| ((temp[0] + k + g_kmd5[i] + string[g])
+				>> (32 - g_smd5[i])));
 	}
 }
-static void		md5_process(unsigned int *state, const unsigned int *string)
+
+static void				md5_process(unsigned int *state,
+						const unsigned int *string)
 {
 	unsigned int	temp[4];
 	int				i;
@@ -51,7 +55,7 @@ static void		md5_process(unsigned int *state, const unsigned int *string)
 		state[i] += temp[i];
 }
 
-unsigned int  md5_swap_bytes(const unsigned int state)
+unsigned int			md5_swap_bytes(const unsigned int state)
 {
 	return (((state & 0xff000000) >> 24) |
 			((state & 0x00ff0000) >> 8) |
@@ -59,7 +63,7 @@ unsigned int  md5_swap_bytes(const unsigned int state)
 			((state & 0x000000ff) << 24));
 }
 
-unsigned char	*md5_string_pad(t_content *string)
+unsigned char			*md5_string_pad(t_content *string)
 {
 	size_t			bits;
 	size_t			done_len;
@@ -78,11 +82,11 @@ unsigned char	*md5_string_pad(t_content *string)
 	return (done_str);
 }
 
-void      md5(t_content *string)
+void					md5(t_content *string)
 {
-	unsigned int  state[4];
-	unsigned char *to_free;
-	size_t      i;
+	unsigned int	state[4];
+	unsigned char	*to_free;
+	size_t			i;
 
 	md5_init(state);
 	to_free = string->content;
@@ -91,7 +95,7 @@ void      md5(t_content *string)
 	i = 0;
 	while (i < string->cont_len)
 	{
-		md5_process(state, (const unsigned int *) (string->content + i));
+		md5_process(state, (const unsigned int *)(string->content + i));
 		i += 512 / 8;
 	}
 	i = 0;

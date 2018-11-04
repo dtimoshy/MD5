@@ -31,7 +31,7 @@ static t_ssl_mode		get_mode(char **argv)
 	i = 0;
 	while (g_mode_change[i].name)
 	{
-		if (!ft_strcmp(argv[0], g_mode_change[i].name))
+		if (ft_strequ(argv[0], g_mode_change[i].name))
 			break ;
 		i++;
 	}

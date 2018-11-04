@@ -6,7 +6,7 @@
 /*   By: dtimoshy <dtimoshy@student.unit.ua>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 16:44:42 by dtimoshy          #+#    #+#             */
-/*   Updated: 2018/10/29 16:44:43 by dtimoshy         ###   ########.fr       */
+/*   Updated: 2018/11/04 19:13:38 by dtimoshy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,37 +17,37 @@
 
 static void			parse_fd_nul(t_ssl_md5 *handler)
 {
-    t_content		*content;
+	t_content		*content;
 
-    if (handler->p > 1)
-    {
-        content = (t_content *)malloc(sizeof(t_content));
-        content->content = (unsigned char *)ft_strdup("");
-        content->cont_len = 0;
-        handler->f(content);
-        ft_printf("\n");
-        free(content);
-        return ;
-    }
-    content = (t_content *)malloc(sizeof(t_content));
-    md_read_from_fd(0, content, BUF_READ);
-    if (handler->p)
-        ft_printf("%s", content->content);
-    handler->f(content);
-    ft_printf("\n");
-    free(content);
+	if (handler->p > 1)
+	{
+		content = (t_content *)malloc(sizeof(t_content));
+		content->content = (unsigned char *)ft_strdup("");
+		content->cont_len = 0;
+		handler->f(content);
+		ft_printf("\n");
+		free(content);
+		return ;
+	}
+	content = (t_content *)malloc(sizeof(t_content));
+	ft_read_from_fd(0, content, BUF_READ);
+	if (handler->p)
+		ft_printf("%s", content->content);
+	handler->f(content);
+	ft_printf("\n");
+	free(content);
 }
 
 static void			parse_fd(t_ssl_md5 *handler, int fd, char *name)
 {
 	t_content		*content;
-	struct stat	    st;
+	struct stat		st;
 
 	if (!handler->r && !handler->q)
 		ft_printf("%s (%s) = ", ft_strto(handler->name, 1), name);
 	content = (t_content *)malloc(sizeof(t_content));
 	stat(name, &st);
-	md_read_from_fd(fd, content, (size_t)st.st_size);
+	ft_read_from_fd(fd, content, (size_t)st.st_size);
 	handler->f(content);
 	if (handler->r && !handler->q)
 		ft_printf(" %s", name);

@@ -6,7 +6,7 @@
 /*   By: dtimoshy <dtimoshy@student.unit.ua>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/29 16:46:03 by dtimoshy          #+#    #+#             */
-/*   Updated: 2018/10/29 16:46:04 by dtimoshy         ###   ########.fr       */
+/*   Updated: 2018/11/04 19:00:42 by dtimoshy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "ft_ssl_md5.h"
 #include <sys/stat.h>
 
-char	*ft_strto(char *string, int mode)
+char		*ft_strto(char *string, int mode)
 {
 	size_t i;
 
@@ -31,35 +31,29 @@ char	*ft_strto(char *string, int mode)
 	return (string);
 }
 
-void	*ft_memjoin(void *dest, void *src, size_t d_len, size_t s_len)
+void		ft_read_from_fd(int fd, t_content *handler, size_t buf_size)
 {
-    void *ret;
+	void	*buf;
+	void	*ret;
+	ssize_t	bytes;
 
-    if (!dest && !src)
-        return (NULL);
-    ret = ft_memalloc(d_len + s_len + 1);
-    if (!ret)
-        return (NULL);
-    ft_memcpy(ret, dest, d_len);
-    ft_memcpy(&ret[d_len], src, s_len);
-    ft_memdel(&dest);
-    return (ret);
-}
-
-void	md_read_from_fd(int fd, t_content *handler, size_t buf_size)
-{
-    void	*buf;
-    ssize_t	bytes;
-
-    buf = ft_memalloc(buf_size);
-    handler->content = ft_memalloc(0);
-    handler->cont_len = 0;
-    while ((bytes = read(fd, buf, buf_size)) > 0)
-    {
-        handler->content = ft_memjoin(handler->content, buf,
-                                  handler->cont_len, (size_t)bytes);
-        handler->cont_len += bytes;
-        ft_bzero(buf, buf_size);
-    }
-    ft_memdel(&buf);
+	buf = ft_memalloc(buf_size);
+	handler->content = ft_memalloc(0);
+	handler->cont_len = 0;
+	while ((bytes = read(fd, buf, buf_size)) > 0)
+	{
+		if (!handler->content && !buf)
+		{
+			handler->content = NULL;
+			break ;
+		}
+		ret = ft_memalloc(handler->cont_len + (size_t)bytes + 1);
+		ft_memcpy(ret, handler->content, handler->cont_len);
+		ft_memcpy(&ret[handler->cont_len], buf, (size_t)bytes);
+		ft_memdel((void **)&handler->content);
+		handler->content = ret;
+		handler->cont_len += bytes;
+		ft_bzero(buf, buf_size);
+	}
+	ft_memdel(&buf);
 }
